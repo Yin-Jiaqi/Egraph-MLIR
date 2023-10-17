@@ -1,0 +1,83 @@
+Vertices:
+Name: source
+Dtype: unknown_dtype
+Dimension: 0
+Input Edges: 
+Output Edges: %arg3 %arg1 %arg2 %6 %8 
+
+Name: sink
+Dtype: unknown_dtype
+Dimension: 0
+Input Edges: %9 
+Output Edges: 
+
+Name: memref_load_0
+Dtype: i32
+Dimension: 2
+Input Edges: %arg3 %arg1 %arg2 
+Output Edges: %5 
+
+Name: arith_addi_0
+Dtype: i32
+Dimension: 0
+Input Edges: %6 %5 
+Output Edges: %7 
+
+Name: arith_addi_1
+Dtype: i32
+Dimension: 0
+Input Edges: %7 %8 
+Output Edges: %9 
+
+
+Edges:
+Edge Name: %arg3
+Dtype: unknown_dtype
+Dimension: 0
+Source Vertex: source
+Target Vertices: memref_load_0 
+
+Edge Name: %arg1
+Dtype: unknown_dtype
+Dimension: 0
+Source Vertex: source
+Target Vertices: memref_load_0 
+
+Edge Name: %arg2
+Dtype: unknown_dtype
+Dimension: 0
+Source Vertex: source
+Target Vertices: memref_load_0 
+
+Edge Name: %6
+Dtype: unknown_dtype
+Dimension: 0
+Source Vertex: source
+Target Vertices: arith_addi_0 
+
+Edge Name: %8
+Dtype: unknown_dtype
+Dimension: 0
+Source Vertex: source
+Target Vertices: arith_addi_1 
+
+Edge Name: %5
+Dtype: i32
+Dimension: 2
+Source Vertex: memref_load_0
+Target Vertices: arith_addi_0 
+
+Edge Name: %7
+Dtype: i32
+Dimension: 0
+Source Vertex: arith_addi_0
+Target Vertices: arith_addi_1 
+
+Edge Name: %9
+Dtype: i32
+Dimension: 0
+Source Vertex: arith_addi_1
+Target Vertices: sink 
+
+
+
