@@ -11,7 +11,8 @@ egg = "0.9.5"
 regex = "1"
 
 [lib]
-path = "src/lib.rs"
+lib_path = "src/lib.rs"
+simple_language_lib = "src/language.rs"
 
 [[bin]]
 name = "Parser"  # You can name this whatever you like
