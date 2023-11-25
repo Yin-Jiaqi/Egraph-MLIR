@@ -1,6 +1,6 @@
 #ifndef UTILITIES_HPP
 #define UTILITIES_HPP
-
+#include <regex>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -223,6 +223,39 @@ auto last_n_from_tuple(const std::tuple<Ts...>& tuple)
     return last_n_from_tuple_impl<N>(tuple, std::make_index_sequence<N>());
 }
 
+template<typename T>
+auto last_n_from_vector(const std::vector<T>& vec, size_t k) {
+    if (k == 0 || k > vec.size()) {
+        throw std::out_of_range("k is out of bounds");
+    }
+    return vec[vec.size() - k];
+}
+
+template <typename T>
+bool hasIntersection(const std::vector<T>& vec1, const std::vector<T>& vec2) {
+    for (const auto &item : vec1) {
+        if (std::find(vec2.begin(), vec2.end(), item) != vec2.end()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <typename T>
+int countMatchingKeys(const std::map<std::string, T>& name2Edge, const std::string& baseName) {
+    std::regex pattern(baseName + "_\\d+");  // The pattern matches baseName followed by an underscore and one or more digits
+
+    int count = 0;
+    for (const auto& pair : name2Edge) {
+        if (std::regex_match(pair.first, pattern)) {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+
 std::string findPositionOfOne(const std::unordered_map<std::string, int>& dataMap) {
 
     int sum = 0;
@@ -261,6 +294,38 @@ int countLines(const std::string& filename) {
 }
 
 
+bool matchPattern(const std::string& line, const std::string& key, const std::string& operation) {
+    std::string pattern = key + "." + operation;
+    return line.find(pattern) != std::string::npos;
+}
+
+std::pair<std::string, int> findPatternInLine(const std::string& line, const std::map<std::string, std::vector<std::pair<std::string, int>>>& dialectDict) {
+    int matchCount = 0;
+    std::vector<std::string> allMatchedPatterns;
+    int operationId = -1; // Placeholder for the operation id
+
+    for (const auto& pair : dialectDict) {
+        for (const auto& operation : pair.second) {
+            if (matchPattern(line, pair.first, operation.first)) {
+                matchCount++;
+                allMatchedPatterns.push_back(pair.first+"."+operation.first);
+                operationId = operation.second;
+            }
+        }
+    }
+
+    if (matchCount != 1) {
+        std::string errorStr = "Matched pattern is not 1 for line: " + line + ". Patterns found: ";
+        for (const auto& pat : allMatchedPatterns) {
+            errorStr += pat + ", ";
+        }
+        errorStr = errorStr.substr(0, errorStr.length() - 2); // remove the trailing ", "
+        throw std::runtime_error(errorStr);
+    }
+
+
+    return {allMatchedPatterns.front(),operationId}; // Return the matched pattern
+}
 
 }  // namespace utilities
 #endif

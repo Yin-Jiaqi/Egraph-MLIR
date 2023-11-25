@@ -1,0 +1,340 @@
+"arith_addi_i32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithAddiI32_0(arr))
+},
+"arith_addf_f32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithAddfF32_0(arr))
+},
+"arith_addi_i32_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithAddiI32_1(arr))
+},
+"arith_addf_f32_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithAddfF32_1(arr))
+},
+"arith_addi_i32_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithAddiI32_2(arr))
+},
+"arith_addf_f32_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithAddfF32_2(arr))
+},
+"arith_muli_i32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithMuliI32_0(arr))
+},
+"arith_mulf_f32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithMulfF32_0(arr))
+},
+"arith_muli_i32_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithMuliI32_1(arr))
+},
+"arith_mulf_f32_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithMulfF32_1(arr))
+},
+"arith_muli_i32_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithMuliI32_2(arr))
+},
+"arith_mulf_f32_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithMulfF32_2(arr))
+},
+"arith_addi_i64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithAddiI64_0(arr))
+},
+"arith_addf_f64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithAddfF64_0(arr))
+},
+"arith_addi_i64_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithAddiI64_1(arr))
+},
+"arith_addf_f64_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithAddfF64_1(arr))
+},
+"arith_addi_i64_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithAddiI64_2(arr))
+},
+"arith_addf_f64_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithAddfF64_2(arr))
+},
+"arith_muli_i64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithMuliI64_0(arr))
+},
+"arith_mulf_f64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ArithMulfF64_0(arr))
+},
+"arith_muli_i64_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithMuliI64_1(arr))
+},
+"arith_mulf_f64_1" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::ArithMulfF64_1(arr))
+},
+"arith_muli_i64_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithMuliI64_2(arr))
+},
+"arith_mulf_f64_2" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::ArithMulfF64_2(arr))
+},
+"arith_constant_i32_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::ArithConstantI32_0(arr))
+},
+"arith_constant_index_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::ArithConstantIndex_0(arr))
+},
+"arith_indexcast_i32index_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::ArithIndexCastI32index_0(arr))
+},
+"memref_load_i32_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::MemrefLoadI32_0(arr))
+},
+"memref_load_i32_1" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::MemrefLoadI32_1(arr))
+},
+"memref_load_i32_2" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::MemrefLoadI32_2(arr))
+},
+"memref_load_i32_3" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::MemrefLoadI32_3(arr))
+},
+"memref_store_i32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::MemrefStoreI32_0(arr))
+},
+"memref_store_i32_1" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::MemrefStoreI32_1(arr))
+},
+"memref_store_i32_2" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::MemrefStoreI32_2(arr))
+},
+"memref_store_i32_3" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::MemrefStoreI32_3(arr))
+},
+"affine_load_i32_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::AffineLoadI32_0(arr))
+},
+"affine_load_i32_1" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::AffineLoadI32_1(arr))
+},
+"affine_load_i32_2" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::AffineLoadI32_2(arr))
+},
+"affine_load_i32_3" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::AffineLoadI32_3(arr))
+},
+"affine_store_i32_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::AffineStoreI32_0(arr))
+},
+"affine_store_i32_1" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::AffineStoreI32_1(arr))
+},
+"affine_store_i32_2" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::AffineStoreI32_2(arr))
+},
+"affine_store_i32_3" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::AffineStoreI32_3(arr))
+},
+"memref_load_f64_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::MemrefLoadF64_0(arr))
+},
+"memref_load_f64_1" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::MemrefLoadF64_1(arr))
+},
+"memref_load_f64_2" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::MemrefLoadF64_2(arr))
+},
+"memref_load_f64_3" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::MemrefLoadF64_3(arr))
+},
+"memref_store_f64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::MemrefStoreF64_0(arr))
+},
+"memref_store_f64_1" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::MemrefStoreF64_1(arr))
+},
+"memref_store_f64_2" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::MemrefStoreF64_2(arr))
+},
+"memref_store_f64_3" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::MemrefStoreF64_3(arr))
+},
+"affine_load_f64_0" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::AffineLoadF64_0(arr))
+},
+"affine_load_f64_1" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::AffineLoadF64_1(arr))
+},
+"affine_load_f64_2" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::AffineLoadF64_2(arr))
+},
+"affine_load_f64_3" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::AffineLoadF64_3(arr))
+},
+"affine_store_f64_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::AffineStoreF64_0(arr))
+},
+"affine_store_f64_1" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::AffineStoreF64_1(arr))
+},
+"affine_store_f64_2" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::AffineStoreF64_2(arr))
+},
+"affine_store_f64_3" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::AffineStoreF64_3(arr))
+},
+"func_func_none_1" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::FuncFuncNone_1(arr))
+},
+"func_func_none_2" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::FuncFuncNone_2(arr))
+},
+"func_func_none_3" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::FuncFuncNone_3(arr))
+},
+"func_func_none_4" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::FuncFuncNone_4(arr))
+},
+"func_func_none_5" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::FuncFuncNone_5(arr))
+},
+"func_func_none_6" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::FuncFuncNone_6(arr))
+},
+"func_func_none_7" => {
+    let arr: [Id; 7] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6]];
+    Some(SimpleLanguage::FuncFuncNone_7(arr))
+},
+"func_func_none_8" => {
+    let arr: [Id; 8] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7]];
+    Some(SimpleLanguage::FuncFuncNone_8(arr))
+},
+"func_func_none_9" => {
+    let arr: [Id; 9] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7], in_id[8]];
+    Some(SimpleLanguage::FuncFuncNone_9(arr))
+},
+"func_func_none_10" => {
+    let arr: [Id; 10] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7], in_id[8], in_id[9]];
+    Some(SimpleLanguage::FuncFuncNone_10(arr))
+},
+"affine_forvalue_none_0" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::AffineForvalueNone_0(arr))
+},
+"affine_forcontrol_none_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::AffineForcontrolNone_0(arr))
+},
+"scf_forvalue_none_0" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::ScfForvalueNone_0(arr))
+},
+"scf_forcontrol_none_0" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::ScfForcontrolNone_0(arr))
+},
+"block_block_none_0" => {
+    let arr: [Id; 0] = [];
+    Some(SimpleLanguage::BlockBlockNone_0(arr))
+},
+"block_block_none_1" => {
+    let arr: [Id; 1] = [in_id[0]];
+    Some(SimpleLanguage::BlockBlockNone_1(arr))
+},
+"block_block_none_2" => {
+    let arr: [Id; 2] = [in_id[0], in_id[1]];
+    Some(SimpleLanguage::BlockBlockNone_2(arr))
+},
+"block_block_none_3" => {
+    let arr: [Id; 3] = [in_id[0], in_id[1], in_id[2]];
+    Some(SimpleLanguage::BlockBlockNone_3(arr))
+},
+"block_block_none_4" => {
+    let arr: [Id; 4] = [in_id[0], in_id[1], in_id[2], in_id[3]];
+    Some(SimpleLanguage::BlockBlockNone_4(arr))
+},
+"block_block_none_5" => {
+    let arr: [Id; 5] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4]];
+    Some(SimpleLanguage::BlockBlockNone_5(arr))
+},
+"block_block_none_6" => {
+    let arr: [Id; 6] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5]];
+    Some(SimpleLanguage::BlockBlockNone_6(arr))
+},
+"block_block_none_7" => {
+    let arr: [Id; 7] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6]];
+    Some(SimpleLanguage::BlockBlockNone_7(arr))
+},
+"block_block_none_8" => {
+    let arr: [Id; 8] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7]];
+    Some(SimpleLanguage::BlockBlockNone_8(arr))
+},
+"block_block_none_9" => {
+    let arr: [Id; 9] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7], in_id[8]];
+    Some(SimpleLanguage::BlockBlockNone_9(arr))
+},
+"block_block_none_10" => {
+    let arr: [Id; 10] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7], in_id[8], in_id[9]];
+    Some(SimpleLanguage::BlockBlockNone_10(arr))
+},
+"block_block_none_11" => {
+    let arr: [Id; 11] = [in_id[0], in_id[1], in_id[2], in_id[3], in_id[4], in_id[5], in_id[6], in_id[7], in_id[8], in_id[9], in_id[10]];
+    Some(SimpleLanguage::BlockBlockNone_11(arr))
+},
