@@ -117,11 +117,11 @@ private:
                                         dialect_name, op_type, DtypeMap.at(utilities::last_n_from_tuple<1>(tpl)),
                                         source_edges, 
                                         std::vector<Edge*>{des1}, utilities::last_n_from_tuple<2>(tpl), line_num, todo_blist.size());
-        g.add_or_update_vertex(computation_op);
+        g.addOrUpdateVertex(computation_op);
         std::vector<Vertex*> sink_op = std::vector<Vertex*> {g.getGraph()[0]};
         auto ename = std::get<0>(tpl);
         if (ename != ""){
-            if (g.edge_exists_l2(ename)){
+            if (g.checkEdgeL2(ename)){
                 auto name2Edge = g.getname2Edge();
                 auto e = name2Edge.at(ename).at(ename);
                 e->setEdgeName(ename+"/0");
@@ -129,28 +129,28 @@ private:
                 name2Edge[ename][ename+"/0"] = e;
                 ename=ename+"/1";
             }
-            else if (g.edge_exists_l2(ename+"/0")){
+            else if (g.checkEdgeL2(ename+"/0")){
                 auto name2Edge = g.getname2Edge();
                 int num_exist_edge = name2Edge.at(ename).size();
                 ename=ename+"/"+std::to_string(num_exist_edge);
             }
             des1->set(ename, computation_op, sink_op, DtypeMap.at(utilities::last_n_from_tuple<1>(tpl)),utilities::last_n_from_tuple<2>(tpl), line_num);
-            sink_op[0]->update_input(des1);
-            g.add_edge_to_graph(des1);
+            sink_op[0]->updateInput(des1);
+            g.addEdge2Graph(des1);
         }
         auto process_edge = [&](Vertex* op, size_t edge_index, const std::string& ename) {
-            if (g.edge_exists_l1(ename)) {
+            if (g.checkEdgeL1(ename)) {
                 auto ename_true = g.getname2Edge().at(ename).rbegin()->first;
-                g.update_edge_to_graph(ename_true, op, edge_index);
+                g.updateEdge2Graph(ename_true, op, edge_index);
             } else {
                 std::vector<Vertex*> temp2 = { op };
                 auto vector_size = g.getVertexList().find("SS")->second.find("Source")->second.size();
                 Vertex* source_op = new Vertex("Source_" + std::to_string(vector_size),"SS","Source","None",{}, {},0, -1, 0);
-                g.add_or_update_vertex(source_op);
-                Edge* edge = op->get_in()[edge_index];
+                g.addOrUpdateVertex(source_op);
+                Edge* edge = op->getInput()[edge_index];
                 edge->set(ename, source_op, temp2, "None", 0, -1);
-                g.add_edge_to_graph(edge);
-                source_op->update_output(edge);
+                g.addEdge2Graph(edge);
+                source_op->updateOutput(edge);
             }
         };
 
@@ -162,11 +162,11 @@ private:
 
 
         if (!todo_blist.empty()){
-            todo_blist.back()->addOperation(des1);
+            todo_blist.back()->addInEdge(des1);
         }
-        else{
-            g.update_edge_to_graph("No_block", computation_op, input_vector.size());
-        }
+        // else{
+        //     g.updateEdge2Graph("No_block", computation_op, input_vector.size());
+        // }
     }
 
 
@@ -248,20 +248,20 @@ private:
                                         "Func", op_type, "None",
                                         source_edges, 
                                         std::vector<Edge*>{des1}, 0, line_num, todo_blist.size());
-        g.add_or_update_vertex(func_op);
+        g.addOrUpdateVertex(func_op);
         std::vector<Vertex*> sink_op = std::vector<Vertex*> {g.getGraph()[0]};
         auto process_edge = [&](Vertex* op, size_t edge_index, const std::pair<std::string, std::tuple<int, std::string>>& e) {
-            if (g.edge_exists_l1(e.first)) {
+            if (g.checkEdgeL1(e.first)) {
                 throw std::runtime_error("The input should not exist:"+e.first);
             } else {
                 std::vector<Vertex*> temp2 = { op };
                 auto vector_size = g.getVertexList().find("SS")->second.find("Source")->second.size();
                 Vertex* source_op = new Vertex("Source_" + std::to_string(vector_size),"SS","Source",DtypeMap.at(std::get<1>(e.second)),{}, {},std::get<0>(e.second), -1, 0);
-                g.add_or_update_vertex(source_op);
-                Edge* edge = op->get_in()[edge_index];
+                g.addOrUpdateVertex(source_op);
+                Edge* edge = op->getInput()[edge_index];
                 edge->set(e.first, source_op, temp2, DtypeMap.at(std::get<1>(e.second)), std::get<0>(e.second), line_num);
-                g.add_edge_to_graph(edge);
-                source_op->update_output(edge);
+                g.addEdge2Graph(edge);
+                source_op->updateOutput(edge);
             }
         };
 
@@ -273,11 +273,11 @@ private:
         }
 
         if (!todo_blist.empty()){
-            todo_blist.back()->addOperation(des1);
+            todo_blist.back()->addInEdge(des1);
         }
-        else{
-            g.update_edge_to_graph("No_block", func_op, input_vector.size());
-        }
+        // else{
+        //     g.updateEdge2Graph("No_block", func_op, input_vector.size());
+        // }
 
 
         return func_op;
@@ -360,10 +360,10 @@ private:
                                         dialect_name, op_type+ "value", "None",
                                         source_edges_value,
                                         std::vector<Edge*>{des1}, 0, line_num, todo_blist.size());
-        g.add_or_update_vertex(for_op_value);
+        g.addOrUpdateVertex(for_op_value);
         std::vector<Vertex*> sink_op = std::vector<Vertex*> {g.getGraph()[0]};
         auto ename_value = std::get<2>(tpl);
-        if (g.edge_exists_l2(ename_value)){
+        if (g.checkEdgeL2(ename_value)){
             auto name2Edge = g.getname2Edge();
             auto e = g.getname2Edge().at(ename_value).at(ename_value);
             e->setEdgeName(ename_value+"/0");
@@ -372,28 +372,28 @@ private:
             g.getname2Edge().at(ename_value)[ename_value+"/0"] = e;
             ename_value=ename_value+"/1";
         }
-        else if (g.edge_exists_l2(ename_value+"/0")){
+        else if (g.checkEdgeL2(ename_value+"/0")){
             auto name2Edge = g.getname2Edge();
             int num_exist_edge = name2Edge.at(ename_value).size();
             ename_value=ename_value+"/"+std::to_string(num_exist_edge);
         }
         des1->set(ename_value, for_op_value, sink_op, "None", 0, line_num);
-        sink_op[0]->update_input(des1);
-        g.add_edge_to_graph(des1);
+        sink_op[0]->updateInput(des1);
+        g.addEdge2Graph(des1);
 
         auto process_edge = [&](Vertex* op, size_t edge_index, const std::string& ename) {
-            if (g.edge_exists_l1(ename)) {
+            if (g.checkEdgeL1(ename)) {
                 auto ename_true = g.getname2Edge().at(ename).rbegin()->first;
-                g.update_edge_to_graph(ename_true, op, edge_index);
+                g.updateEdge2Graph(ename_true, op, edge_index);
             } else {
                 std::vector<Vertex*> temp2 = { op };
                 auto vector_size = g.getVertexList().find("SS")->second.find("Source")->second.size();
                 Vertex* source_op = new Vertex("Source_" + std::to_string(vector_size),"SS","Source","None",{}, {},0, -1, 0);
-                g.add_or_update_vertex(source_op);
-                Edge* edge = op->get_in()[edge_index];
+                g.addOrUpdateVertex(source_op);
+                Edge* edge = op->getInput()[edge_index];
                 edge->set(ename, source_op, temp2, "None", 0, -1);
-                g.add_edge_to_graph(edge);
-                source_op->update_output(edge);
+                g.addEdge2Graph(edge);
+                source_op->updateOutput(edge);
             }
         };
         auto input_vector=std::get<3>(tpl);
@@ -409,9 +409,9 @@ private:
                                         dialect_name, op_type+ "control", "None",
                                         source_edges_control, 
                                         std::vector<Edge*>{des2}, 0, line_num, todo_blist.size());
-        g.add_or_update_vertex(for_op_control);
+        g.addOrUpdateVertex(for_op_control);
         std::string ename_control = "Pseudo";
-        if (g.edge_exists_l2(ename_control)){
+        if (g.checkEdgeL2(ename_control)){
             auto name2Edge = g.getname2Edge();
             auto e = g.getname2Edge().at(ename_control).at(ename_control);
             e->setEdgeName(ename_control+"/0");
@@ -420,17 +420,17 @@ private:
             g.getname2Edge().at(ename_control)[ename_control+"/0"] = e;
             ename_control=ename_control+"/1";
         }
-        else if (g.edge_exists_l2(ename_control+"/0")){
+        else if (g.checkEdgeL2(ename_control+"/0")){
             auto name2Edge = g.getname2Edge();
             int num_exist_edge = name2Edge.at(ename_control).size();
             ename_control=ename_control+"/"+std::to_string(num_exist_edge);
         }
         des2->set(ename_control, for_op_control, sink_op, "None", 0, line_num);
-        sink_op[0]->update_input(des2);
+        sink_op[0]->updateInput(des2);
         des1->updateOutOp(for_op_control, &(g.getGraph()));
-        g.add_edge_to_graph(des2);
+        g.addEdge2Graph(des2);
 
-        todo_blist.back()->addOperation(des2);
+        todo_blist.back()->addInEdge(des2);
 
         return for_op_control;
     }

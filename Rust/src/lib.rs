@@ -181,43 +181,43 @@ pub fn parse_graph(input: &str) -> (Vec<String>, Vec<String>, HashMap<String, Ve
 
 
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    #[test]
-    fn it_works() {
-        let input = fs::read_to_string("output111.txt").expect("Failed to read file");
-        let (vertices, edges, in_pairs, out_pairs) = parse_graph(&input);
-        println!("\nIngoing Pairs!!");
-        for (vertex, incoming_edges) in &in_pairs {
-            println!("Vertex: {}", vertex);
-            // for edge in incoming_edges {
-            //     println!("    Incoming Edge: {}", edge);
-            // }
-            println!("{:?}", incoming_edges);
-        }
+//     #[test]
+//     fn it_works() {
+//         let input = fs::read_to_string("output111.txt").expect("Failed to read file");
+//         let (vertices, edges, in_pairs, out_pairs) = parse_graph(&input);
+//         println!("\nIngoing Pairs!!");
+//         for (vertex, incoming_edges) in &in_pairs {
+//             println!("Vertex: {}", vertex);
+//             // for edge in incoming_edges {
+//             //     println!("    Incoming Edge: {}", edge);
+//             // }
+//             println!("{:?}", incoming_edges);
+//         }
 
-        println!("\nSorted Vertices!");
-        println!("{:?}", vertices);
-        // for v in &vertices {
-        //     println!("{:?}", v);
-        // }
+//         println!("\nSorted Vertices!");
+//         println!("{:?}", vertices);
+//         // for v in &vertices {
+//         //     println!("{:?}", v);
+//         // }
 
-        println!("\nEdges!");
-        println!("{:?}", edges);
-        // for e in &edges {
-        //     println!("{:?}", e);
-        // }
+//         println!("\nEdges!");
+//         println!("{:?}", edges);
+//         // for e in &edges {
+//         //     println!("{:?}", e);
+//         // }
 
-        println!("\nOutgoing Pairs!");
-        println!("{:?}", out_pairs);
-        // for (src, dst) in &out_pairs {
-        //     println!("{}, {}", src, dst);
-        // }
+//         println!("\nOutgoing Pairs!");
+//         println!("{:?}", out_pairs);
+//         // for (src, dst) in &out_pairs {
+//         //     println!("{}, {}", src, dst);
+//         // }
 
-    }
-}
+//     }
+// }
 
 
 // #[test]

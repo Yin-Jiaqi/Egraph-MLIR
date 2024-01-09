@@ -100,6 +100,9 @@ define_language! {
     }
 }
 
+
+
+
 pub fn convert_to_simple_language_enum(in_id: Vec<Id>, stripped_name: &str) -> Option<SimpleLanguage> {
     let language_enum = match stripped_name {
         "arith_addi_i32_0" => {
@@ -452,3 +455,4 @@ pub fn convert_to_simple_language_enum(in_id: Vec<Id>, stripped_name: &str) -> O
     };
     language_enum
 }
+
