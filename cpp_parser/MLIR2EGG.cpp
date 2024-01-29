@@ -8,14 +8,14 @@
 #include <functional>
 #include <cerrno>
 #include <cassert>
+#include <unistd.h>
 
 #include "include/utilities.hpp"
 #include "include/graph.hpp"
 #include "include/parser.hpp"
-// 140
 
-
-const std::string filepath = "mlir/gemm/gemm.mlir"; 
+// const std::string filepath = "mlir/gemm/gemm.mlir";
+// const std::string output_filepath = "gemm.txt"; 
 
 /**
  * In this case, checks if the string is empty or contains only whitespace.
@@ -28,15 +28,37 @@ bool checkPattern(const std::string& str) {
     return std::regex_match(str, emptyLinePattern);
 }
 
-
-
-
-int main() {
+int main(int argc, char *argv[]) {
     // Initialize graph and vertices
     Graph empty_graph;
     Boost_Graph g(empty_graph);
     std::vector<Edge*> edges_to_delete;
     std::vector<Vertex*> vertices_to_delete;
+    std::string filepath;
+    std::string output_filepath;
+    std::string updated_mlir;
+    int option;
+
+    // Parse command line arguments using getopt
+    while ((option = getopt(argc, argv, "i:o:m:")) != -1) {
+        switch (option) {
+            case 'i': // Input file path
+                filepath = optarg;
+                break;
+            case 'o': // Output file path
+                output_filepath = optarg;
+                break;
+            case 'm': // Output file path
+                updated_mlir = optarg;
+                break;
+            case '?': // Unrecognized option
+                std::cerr << "Usage: " << argv[0] << " -i <input filepath> -o <output filepath>\n";
+                return 1;
+            default:
+                std::cerr << "Usage: " << argv[0] << " -i <input filepath> -o <output filepath>\n";
+                return 1;
+        }
+    }
 
     // Create and add unknown sink vertex, all vertex/operation that has no output data will connect to unknown sink
     Vertex unknown_sink("Sink", "SS", "Sink", "None", {}, {}, 0, -1, 0);
@@ -59,19 +81,57 @@ int main() {
     int line_num = 1;
     std::vector<Block*> todo_blist = {};
     std::vector<Block*> done_blist = {};
+    std::unordered_map<std::string,std::string> map;
 
     // File processing logic
-    std::ifstream inFile = utilities::openFile(filepath);
-    while (std::getline(inFile, line)) {
+    // std::ifstream inFile = utilities::openFile(filepath);
+    
+    // ---------------------------------
+
+    std::ifstream inFile(filepath);
+    if (!inFile.is_open()) {
+        std::cerr << "Failed to open file: " << filepath << std::endl;
+        return 1;
+    }
+
+    std::stringstream buffer;
+    buffer << inFile.rdbuf();  // Read the entire file into a string stream
+    std::string mlir_code = buffer.str();  // Convert the string stream to a string
+    std::string transformed_code = utilities::rename_variables(mlir_code);
+    // transformed_code = utilities::apply_placeholder(transformed_code);
+    // utilities::print(transformed_code);
+    std::istringstream iss(transformed_code);
+    inFile.close();
+    std::ofstream outfile(updated_mlir);
+    if (outfile.is_open()) {
+        // Write the string to the file
+        outfile << transformed_code;
+        // Close the file
+        outfile.close();
+    } else {
+        std::cerr << "Unable to open file"<<std::endl;
+        throw std::runtime_error(std::string("Cannot print updated code to file") + line);
+    }
+    // ----------------------------------
+
+    while (std::getline(iss, line)) {
         if (!line.empty()) {
             // Skip the line of "return" and the attributes which identify the hardware information
             // module attributes {dlti.dl_spec = #dlti.dl_spec<#dlti.dl_entry<"dlti.endianness", "little">, #dlti.dl_entry<i64, dense<64> : vector<2xi32>>, #dlti.dl_entry<f80, dense<128> : vector<2xi32>>, #dlti.dl_entry<i1, dense<8> : vector<2xi32>>, #dlti.dl_entry<i8, dense<8> : vector<2xi32>>, #dlti.dl_entry<i16, dense<16> : vector<2xi32>>, #dlti.dl_entry<i32, dense<32> : vector<2xi32>>, #dlti.dl_entry<f16, dense<16> : vector<2xi32>>, #dlti.dl_entry<f64, dense<64> : vector<2xi32>>, #dlti.dl_entry<f128, dense<128> : vector<2xi32>>>, llvm.data_layout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128", llvm.target_triple = "x86_64-unknown-linux-gnu", "polygeist.target-cpu" = "x86-64", "polygeist.target-features" = "+cx8,+fxsr,+mmx,+sse,+sse2,+x87", "polygeist.tune-cpu" = "generic"} {
             if (line.find("module attributes") != std::string::npos || line.find("return") != std::string::npos){
             }
+            else if (line.find("affine_map")!= std::string::npos){
+                assert(std::count(line.begin(), line.end(), '>')==2 && line.back()=='>');
+                auto output=utilities::split(line,"=<");
+                assert(output.size()==3);
+                assert(output.at(1)==" affine_map");
+                // map[output.at(0)]=output.at(2);
+                map[utilities::trim(output.at(0))]=line;
+            }
             // Regex R"(^\s*\}\s*$)" matches a line with only whitespace and a single '}' character.
             // "}" ends code blocks, e.g., functions, loops.
             else if (std::regex_match(line, std::regex(R"(^\s*\}\s*$)"))) {
-                if (inFile.peek() != '\n' && inFile.peek() != EOF) {
+                if (iss.peek() != '\n' && iss.peek() != EOF) {
                     auto block= todo_blist.back();
                     block->setPosend(line_num);
                     todo_blist.pop_back();
@@ -98,7 +158,7 @@ int main() {
             else if (line.find(".for")!= std::string::npos){
                 MyTupleType3 tuple_output = For::split_data(line);
                 For ForInstance;
-                Vertex* for_op_control = ForInstance.parse_for(line,tuple_output,g,line_num,todo_blist,"value");
+                Vertex* for_op_control = ForInstance.parse_for(line,tuple_output,g,line_num,todo_blist,"value",map);
                 // scf.for and affine.for should contain "{" symbol to generate a block
                 if (line.find("{")!= std::string::npos){
                     int index=todo_blist.size()+done_blist.size();
@@ -127,9 +187,20 @@ int main() {
     }
     todo_blist.clear();
 
+
     // Handling the processing of Block
     //   ----------> block_op ----------> knob
     //   operations           des1(bedge)
+
+
+    // for (auto block: done_blist){
+    //     auto operations = block->getInEdge();
+    //     auto knob=block->getKnob();
+    //     std::cout<<knob->getOpName()<<std::endl;
+    //     std::cout<<operations.size()<<std::endl;
+    // }
+
+
     for (auto block: done_blist){
         auto operations = block->getInEdge();
         auto line_num_block = block->getPos()[0];
@@ -141,11 +212,14 @@ int main() {
         auto knob=block->getKnob();
         std::vector<Vertex*> vertices{knob};
         knob->updateInput(des1);
-        std::string ename = "bedge/"+std::to_string(block->getIndex());
+        std::string ename = "bedge"+std::to_string(block->getIndex());
         des1->set(ename, block_op, vertices, "None",0, line_num_block);
         g.addEdge2Graph(des1);
         g.addOrUpdateVertex(block_op);
+        // std::cout<<"222|"<<knob->getOpName()<<std::endl;
+        // std::cout<<"333|"<<operations.size()<<std::endl;
         for (size_t i = 0; i < operations.size(); ++i) {
+            // std::cout<<"111|"<<operations.at(i)->getEdgeName()<<std::endl;
             operations[i]->updateOutOp(block_op,&(g.getGraph()));
         }
         edges_to_delete.push_back(des1);
@@ -153,9 +227,8 @@ int main() {
     }
 
 
-
     // Print the output data.
-    std::ofstream file("output_test.txt");
+    std::ofstream file(output_filepath);
     if (file.is_open()) {
         g.printGraph(file);
         file.close();
@@ -175,6 +248,5 @@ int main() {
     }
     vertices_to_delete.clear();
     done_blist.clear();
-    inFile.close();
-      return 0;
+    return 0;
 }

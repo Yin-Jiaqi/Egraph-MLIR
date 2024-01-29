@@ -1,3 +1,6 @@
+#ifndef REVERTER_HPP
+#define REVERTER_HPP
+
 #include <iostream>
 #include <unordered_map>
 #include <functional>
@@ -42,33 +45,38 @@ class OpInfoClass {
     private:
         std::unordered_map<std::string, std::unordered_map<std::string, bool>> _if_return;
         std::unordered_map<std::string, std::unordered_map<std::string, std::function<std::vector<int>(int)>>> _pos;
-        std::unordered_map<std::string, std::unordered_map<std::string, std::function<std::string(std::vector<int>,std::unordered_map<std::string, std::string>, std::vector<std::string>)>>> _return;
+        std::unordered_map<std::string, std::unordered_map<std::string, std::function<std::string(std::vector<int>,std::unordered_map<std::string, std::string>, std::vector<std::string>, std::string)>>> _return;
         std::vector<int> func1(int dimension) { return {};}
         std::vector<int> func2(int dimension) { return {0,dimension+1}; }
         std::vector<int> func3(int dimension) { return {0};}
         std::vector<int> func4(int dimension) { return {1};}
-        std::string func5(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return "index";}
-        std::string func6(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { 
+        std::string func5(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string expression_dtype) { return "index";}
+        std::string func6(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string expression_dtype) { 
             std::string dtype = param.at(sliced.at(pos[0]));
             for (auto i:pos){
                 assert(param.at(sliced.at(i))==dtype);
             }
+            assert(dtype==expression_dtype);
             return dtype;
         }
-        std::string func7(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { 
+        std::string func7(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string expression_dtype) { 
             std::string dtype = param.at(sliced.at(pos[0]));
             for (auto i:pos){
                 assert(param.at(sliced.at(i))==dtype);
             }
-            return utilities::split(dtype,"<x>").back();
+            assert(utilities::split(dtype,"<x>").back()==expression_dtype);
+            return expression_dtype;
+        }
+        std::string func8(std::vector<int> pos, std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string expression_dtype) { 
+            return expression_dtype;
         }
     public:
         OpInfoClass() {
             _if_return = {
-                {"arith", {{"none", false}, {"addi", true}, {"muli", true}, {"addf", true}, {"mulf", true}, {"indexcast", true}}},
+                {"arith", {{"none", false}, {"addi", true}, {"muli", true}, {"addf", true}, {"mulf", true}, {"subf",true}, {"subi",true}, {"divf",true}, {"divi",true}, {"indexcast", true}, {"constant", true}}},
                 {"memref", {{"none", false}, {"load", true}, {"store", false}}},
                 {"scf", {{"none", false}, {"forvalue", true}, {"forcontrol", false}}},
-                {"affine", {{"none", false}, {"forvalue", true}, {"forcontrol", false}, {"if", false}, {"load", true}, {"store", false}}},
+                {"affine", {{"none", false}, {"apply", true}, {"forvalue", true}, {"forcontrol", false}, {"if", false}, {"load", true}, {"store", false}}},
                 {"block", {{"block", false}}}
             };
 
@@ -76,21 +84,31 @@ class OpInfoClass {
             _pos["arith"]["addi"] = [this](int dimension) { return this->func2(dimension); };
             _pos["arith"]["muli"] = [this](int dimension) { return this->func2(dimension); };
             _pos["arith"]["addf"] = [this](int dimension) { return this->func2(dimension); };
+            _pos["arith"]["subf"] = [this](int dimension) { return this->func2(dimension); };
+            _pos["arith"]["subi"] = [this](int dimension) { return this->func2(dimension); };
+            _pos["arith"]["divf"] = [this](int dimension) { return this->func2(dimension); };
+            _pos["arith"]["divi"] = [this](int dimension) { return this->func2(dimension); };
             _pos["arith"]["mulf"] = [this](int dimension) { return this->func2(dimension); };
             _pos["arith"]["indexcast"] = [this](int dimension) { return this->func3(dimension); };
+            _pos["arith"]["constant"] = [this](int dimension) { return this->func3(dimension); };
             _pos["memref"]["load"] = [this](int dimension) { return this->func3(dimension); };
             _pos["memref"]["store"] = [this](int dimension) { return this->func4(dimension); };
             _pos["affine"]["load"] = [this](int dimension) { return this->func3(dimension); };
             _pos["affine"]["store"] = [this](int dimension) { return this->func4(dimension); };
-            _return["scf"]["forvalue"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func5(pos,param,sliced); };
-            _return["affine"]["forvalue"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func5(pos,param,sliced); };
-            _return["arith"]["indexcast"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func5(pos,param,sliced); };
-            _return["arith"]["addi"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func6(pos,param,sliced); };
-            _return["arith"]["addf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func6(pos,param,sliced); };
-            _return["arith"]["muli"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func6(pos,param,sliced); };
-            _return["arith"]["mulf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func6(pos,param,sliced); };
-            _return["affine"]["load"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func7(pos,param,sliced); };
-            _return["memref"]["load"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced) { return this->func7(pos,param,sliced); };
+            _return["scf"]["forvalue"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func5(pos,param,sliced,dtype); };
+            _return["affine"]["forvalue"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func5(pos,param,sliced,dtype); };
+            _return["arith"]["indexcast"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func5(pos,param,sliced,dtype); };
+            _return["arith"]["constant"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func8(pos,param,sliced,dtype); };
+            _return["arith"]["addi"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["addf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["subi"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["subf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["divi"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["divf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["muli"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["arith"]["mulf"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func6(pos,param,sliced,dtype); };
+            _return["affine"]["load"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func7(pos,param,sliced,dtype); };
+            _return["memref"]["load"] = [this](std::vector<int> pos,std::unordered_map<std::string, std::string> param, std::vector<std::string> sliced, std::string dtype) { return this->func7(pos,param,sliced,dtype); };
         }
         // Getter for _if_return map
         bool getIfReturn(const std::string& category, const std::string& operation) const {
@@ -101,7 +119,7 @@ class OpInfoClass {
                     return opIt->second;
                 }
             }
-            throw std::runtime_error("Category or operation not found in _if_return");
+            throw std::runtime_error("Category " + category + " or operation " + operation+ " not found in _if_return");
         }
 
         // Getter for a specific _pos function
@@ -116,7 +134,7 @@ class OpInfoClass {
             throw std::runtime_error("Category or operation not found in _pos");
         }
         // Getter for a specific _return function
-        std::function<std::string(std::vector<int>,std::unordered_map<std::string, std::string>, std::vector<std::string>)> getReturnFunc(const std::string& category, const std::string& operation) const {
+        std::function<std::string(std::vector<int>,std::unordered_map<std::string, std::string>, std::vector<std::string>, std::string)> getReturnFunc(const std::string& category, const std::string& operation) const {
             auto catIt = _return.find(category);
             if (catIt != _return.end()) {
                 auto opIt = catIt->second.find(operation);
@@ -137,3 +155,6 @@ class OpInfoClass {
             return _pos;
         }
 };
+
+
+#endif // REVERTER_HPP

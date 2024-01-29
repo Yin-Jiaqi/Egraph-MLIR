@@ -3,6 +3,118 @@ use regex::Regex;
 use std::fs;
 use std::collections::{HashMap, VecDeque};
 
+fn infix_to_postfix(expression: &str) -> Vec<String> {
+    let precedence = |op: char| -> usize {
+        match op {
+            '+' | '-' => 1,
+            '*' | '/' => 2,
+            '(' => 0,
+            _ => usize::MAX, // for operands
+        }
+    };
+
+    let mut stack: Vec<char> = Vec::new();
+    let mut output: Vec<String> = Vec::new();
+    let mut chars = expression.chars().peekable();
+
+    while let Some(&c) = chars.peek() {
+        match c {
+            c if c.is_alphanumeric() || c == '%' => {
+                let mut operand = String::new();
+                while let Some(&ch) = chars.peek() {
+                    if ch.is_alphanumeric() || ch == '%' {
+                        operand.push(ch);
+                        chars.next();
+                    } else {
+                        break;
+                    }
+                }
+                output.push(operand);
+            }
+            '(' => {
+                stack.push(c);
+                chars.next();
+            }
+            ')' => {
+                while stack.last() != Some(&'(') {
+                    output.push(stack.pop().unwrap().to_string());
+                }
+                stack.pop(); // pop '(' from stack
+                chars.next();
+            }
+            _ if c == '+' || c == '-' || c == '*' || c == '/' => {
+                while !stack.is_empty() && precedence(c) <= precedence(*stack.last().unwrap()) {
+                    output.push(stack.pop().unwrap().to_string());
+                }
+                stack.push(c);
+                chars.next();
+            }
+            _ => {
+                chars.next();
+            }
+        }
+    }
+
+    while !stack.is_empty() {
+        output.push(stack.pop().unwrap().to_string());
+    }
+
+    output
+}
+
+fn postfix_to_prefix(postfix: Vec<String>) -> String {
+    let mut stack: Vec<String> = Vec::new();
+
+    for token in postfix {
+        if token.chars().all(|c| c.is_alphanumeric() || c == '%') {
+            stack.push(token);
+        } else {
+            let op1 = stack.pop().unwrap();
+            let op2 = stack.pop().unwrap();
+            stack.push(format!("({} {} {})", token, op2, op1));
+        }
+    }
+
+    stack.pop().unwrap()
+}
+
+pub fn convert_expression(expression: &str) -> String {
+    let postfix_exp = infix_to_postfix(expression);
+    postfix_to_prefix(postfix_exp)
+}
+
+
+pub fn extract_parentheses_content(input: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut depth = 0;
+    let mut current = String::new();
+
+    for c in input.chars() {
+        match c {
+            '(' => {
+                if depth > 0 {
+                    current.push(c);
+                }
+                depth += 1;
+            }
+            ')' => {
+                depth -= 1;
+                if depth > 0 {
+                    current.push(c);
+                } else if depth == 0 {
+                    result.push(current.clone());
+                    current.clear();
+                }
+            }
+            _ if depth > 0 => current.push(c),
+            _ => {}
+        }
+    }
+
+    result
+}
+
+
 fn topological_sort(ingoing: &mut HashMap<String, Vec<String>>,outgoing: &HashMap<String,String>) -> Vec<String> {
     let mut in_degree: HashMap<String, usize> = HashMap::new();
     let mut queue: VecDeque<String> = VecDeque::new();
@@ -159,6 +271,7 @@ pub fn parse_graph(input: &str) -> (Vec<String>, Vec<String>, HashMap<String, Ve
                     None => {
                         // eprintln!("Error: Cannot find key {}", edge);
                         // Optionally, if you want to stop execution when an error occurs:
+                        println!("{}",vname);
                         panic!("Error: Cannot find key {}", edge);
                     }
                 }

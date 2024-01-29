@@ -37,13 +37,14 @@ private:
     // Mapping to track the type of operation performed by the vertex.
     // Note: Only one operation type can be active per category in this map
     std::unordered_map<std::string, std::unordered_map<std::string, int>> _op_type {
-        {"Arith", {{"None",0}, {"Addi",0}, {"Muli",0}, {"Addf",0}, {"Mulf",0}, {"Constant",0}, {"IndexCast",0}}},
+        {"Arith", {{"None",0}, {"Addi",0}, {"Muli",0}, {"Addf",0}, {"Mulf",0}, {"Subf",0}, {"Subi",0}, {"Divf",0}, {"Divi",0}, {"Constant",0}, {"IndexCast",0}}},
         {"Memref", {{"None",0}, {"Load",0}, {"Store",0}}},
         {"Func", {{"None",0}, {"Func",0}, {"Return",0}}},
         {"Scf", {{"None",0}, {"For",0}, {"If",0}}},
         {"Affine", {{"None",0}, {"Forvalue",0}, {"Forcontrol",0}, {"If",0}, {"Load",0}, {"Store",0}}},
         // Source/Sink operations
         {"SS", {{"None",0}, {"Source",0}, {"Sink",0}}},
+        {"Assign",{{"Assign",0}}},
         // Block operations
         {"Block", {{"Block",0}}}
     };
@@ -278,12 +279,13 @@ private:
     // Mapping of vertices in the graph, categorized by operation types.
     // Each operation type maps to a sub-map of operation names and their corresponding vertices.
     std::unordered_map<std::string, std::unordered_map<std::string,std::vector<Vertex*>>> _vertex_list = {
-        {"Arith", {{"None",{}}, {"Addi",{}}, {"Muli",{}}, {"Addf",{}}, {"Mulf",{}}, {"Constant",{}}, {"IndexCast",{}}}},
+        {"Arith", {{"None",{}}, {"Addi",{}}, {"Muli",{}}, {"Addf",{}}, {"Mulf",{}}, {"Subf",{}}, {"Subi",{}}, {"Divf",{}}, {"Divi",{}}, {"Constant",{}}, {"IndexCast",{}}}},
         {"SS", {{"None",{}}, {"Source",{}}, {"Sink",{}}}},
         {"Memref", {{"None",{}}, {"Load",{}}, {"Store",{}}}},
         {"Func", {{"None",{}}, {"Func",{}}, {"Return",{}}}},
         {"Scf", {{"None",{}}, {"For",{}}, {"If",{}}}},
         {"Affine", {{"None",{}}, {"Forvalue",{}}, {"Forcontrol",{}}, {"If",{}}, {"Load",{}}, {"Store",{}}}},
+        {"Assign",{{"Assign",{}}}},
         {"Block", {{"Block",{}}}}
     };
     // Mapping from vertex names to their corresponding Vertex objects.
@@ -329,12 +331,14 @@ public:
 
     // Level 1 Check: Determines if an edge with the specified name exists in _name2Edge,
     // without considering the occurrence count of the edge.
+    // Return True if string s already L1 exist in _name2Edge
     bool checkEdgeL1(std::string s) const {
         return _name2Edge.find(s) != _name2Edge.end();
     }
 
     // Level 2 Check: Determines if an edge exists in _name2Edge while also considering
     // the occurrence count of the edge. It splits the edge name to evaluate its existence.
+    // Return True if string s already L2 exist in _name2Edge
     bool checkEdgeL2(std::string s) const {
         std::vector<std::string> ename_vec = utilities::split(s, "/");
         return checkEdgeL1(ename_vec[0]) && _name2Edge.at(ename_vec[0]).find(s) != _name2Edge.at(ename_vec[0]).end();
@@ -408,6 +412,9 @@ public:
 
     // Add edge to graph
     void addEdge2Graph(Edge* e) {
+        if (checkEdgeL1(e->getEdgeName()) and utilities::countSubstrOccurences(e->getEdgeName(),"Pseudo")==0){
+            throw std::runtime_error(std::string("Sharing same name:") + e->getEdgeName());
+        }
         auto ename=e->getEdgeName();
 	    if (!checkEdgeL2(ename)) {
             // Check and possibly add the source and target vertex.
@@ -423,11 +430,27 @@ public:
             }
             // Update _edge_list and _name2Edge
             _edge_list.push_back(e);
-            _name2Edge[utilities::split(ename,"/").at(0)][e->getEdgeName()]=e;
+            if (utilities::split(ename," ").size()==1){
+                _name2Edge[utilities::split(ename,"/").at(0)][e->getEdgeName()]=e;
+                if (utilities::split(ename,"/").size()>1){
+                    if (!(utilities::canBeParsedAsType(utilities::split(ename,"/").at(1),"i32"))){
+                        assert(_name2Edge[utilities::split(ename,"/").at(0)].size()>=2);
+                        auto itLast = _name2Edge[utilities::split(ename,"/").at(0)].end();
+                        --itLast;
+                        _name2Edge[utilities::split(ename,"/").at(0)].erase(itLast);
+                        // auto itSecondLast = std::next(itLast);
+                        // std::swap(itLast->second, itSecondLast->second);
+                    }
+                }
+            }
+            else{
+                _name2Edge[ename][e->getEdgeName()]=e;
+            }
 		}
         else{
             throw std::runtime_error(std::string("Edge exists, try update_edge_to_graph ") + ename);
         }
+        assert(utilities::split(ename,"/").size()<3);
     }
 
     // Add output operation for an existed edge
@@ -467,6 +490,7 @@ private:
     // Each element in this array can be an empty string (""), "0", or a variable like "%1".
     std::unique_ptr<std::string[]> _iter;
     int _index;
+    size_t block_level;
     Vertex* _knob;
     std::vector<Edge*> _in_edge;
 
@@ -489,6 +513,7 @@ public:
     }
 
     void addInEdge(Edge* operation) {
+        // std::cout<<_knob->getOpName()<<"|"<<operation->getEdgeName()<<std::endl;
         _in_edge.push_back(operation);
     }
 
